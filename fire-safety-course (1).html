@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fire Safety at Work – Interactive Course</title>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#E9ECEF;--surface:#fff;--ink:#1F2933;--muted:#52606D;--accent:#C2361B;--on:#fff;--ok:#15803D;--line:#CBD2D9;--tint:#FDE8E3;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12181D;--surface:#1B242B;--ink:#EEF1F4;--muted:#A5B1BB;--accent:#FF8A6B;--on:#1B242B;--ok:#4ADE80;--line:#33414C;--tint:#3A2621}}
+:root[data-theme="dark"]{--bg:#12181D;--surface:#1B242B;--ink:#EEF1F4;--muted:#A5B1BB;--accent:#FF8A6B;--on:#1B242B;--ok:#4ADE80;--line:#33414C;--tint:#3A2621}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 18px/1.55 "Atkinson Hyperlegible",Verdana,Arial,sans-serif}
+main{max-width:760px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:2.1rem;line-height:1.15;margin:0 0 10px}h2{font-size:1.4rem;line-height:1.25;margin:0 0 8px}p{margin:0 0 12px;max-width:62ch}
+.muted{color:var(--muted)}.ok{color:var(--ok);font-weight:700}.bad{color:var(--accent);font-weight:700}
+.bar{display:flex;gap:6px;margin-bottom:18px}
+.bar div{flex:1;font-size:.8rem;padding-top:6px;border-top:5px solid var(--line);color:var(--muted)}
+.bar .on{border-color:var(--accent);color:var(--ink);font-weight:700}.bar .done{border-color:var(--ok)}
+section{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:22px;border-top:6px solid var(--accent)}section[hidden]{display:none}
+button{font:inherit;min-height:44px;border-radius:8px;cursor:pointer;border:2px solid var(--accent);background:transparent;color:var(--ink);padding:9px 16px}
+button:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+button.primary{background:var(--accent);color:var(--on);font-weight:700}button:disabled{opacity:.45;cursor:not-allowed}
+.actions{margin-top:20px;display:flex;justify-content:flex-end}
+.note{border-left:5px solid var(--accent);background:var(--tint);padding:10px 14px;border-radius:0 8px 8px 0;min-height:48px;margin-top:12px}
+.plan{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin:14px 0}
+.room{border:2px solid var(--line);border-radius:8px;padding:10px;background:var(--bg)}
+.room h3{margin:0 0 8px;font-size:1rem}
+.obj{display:block;width:100%;text-align:left;margin-top:6px;font-size:.95rem;min-height:40px;padding:6px 10px}
+.obj.hz{background:var(--tint);border-color:var(--accent)}.obj.fine{border-color:var(--ok)}
+.pool,.slots{display:flex;flex-direction:column;gap:8px;margin:12px 0}
+.step{text-align:left;width:100%}.step.no{animation:sh .3s}@keyframes sh{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.slot{border:2px dashed var(--line);border-radius:8px;padding:8px 12px;min-height:44px}.slot.f{border-style:solid;border-color:var(--ok)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:14px 0}
+.fc{min-height:130px;text-align:center;display:flex;flex-direction:column;justify-content:center;gap:4px;background:var(--bg);padding:12px}
+.fc.on{background:var(--tint);border-color:var(--ok)}.fc b{font-size:1.05rem}
+.q{margin-bottom:20px}.q label{display:block;padding:8px 10px;border:1px solid var(--line);border-radius:8px;margin-top:8px;cursor:pointer}
+.q input{margin-right:8px;accent-color:var(--accent)}.q .res{font-size:.95rem;margin-top:6px}
+.score{font-size:2.4rem;font-weight:700;color:var(--accent);margin:0}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+<div class="bar" id="bar" aria-label="Course progress"></div>
+
+<section id="s0">
+  <h1>Fire Safety at Work</h1>
+  <p class="muted">A 10-minute interactive course for office staff.</p>
+  <h2>By the end you will be able to</h2>
+  <ul><li>Spot fire hazards in an office</li><li>Follow the right steps when a fire starts</li><li>Choose the correct extinguisher</li></ul>
+  <div class="actions"><button class="primary next">Start course</button></div>
+</section>
+
+<section id="s1" hidden>
+  <h2>Hazard hunt</h2>
+  <p>Inspect the office. Find the <b>4 fire hazards</b>. Not every item is a problem.</p>
+  <div class="plan" id="plan"></div>
+  <div class="note" id="h-out" aria-live="polite">Select an item to inspect it.</div>
+  <p class="muted" id="h-count" style="margin-top:8px">Hazards found: 0 of 4</p>
+  <div class="actions"><button class="primary next" disabled>Continue</button></div>
+</section>
+
+<section id="s2" hidden>
+  <h2>If a fire starts, what comes first?</h2>
+  <p>Select the steps in the correct order, starting with the first action.</p>
+  <div class="slots" id="slots" aria-label="Your order"></div>
+  <div class="pool" id="pool"></div>
+  <div class="note" id="o-out" aria-live="polite">Which step comes first?</div>
+  <div class="actions"><button class="primary next" disabled>Continue</button></div>
+</section>
+
+<section id="s3" hidden>
+  <h2>Choose the right extinguisher</h2>
+  <p>Select each card to see what it is used for.</p>
+  <div class="cards" id="cards"></div>
+  <p class="muted" id="c-count">Cards opened: 0 of 4</p>
+  <div class="actions"><button class="primary next" disabled>Continue</button></div>
+</section>
+
+<section id="s4" hidden>
+  <h2>Final check</h2><div id="quiz"></div>
+  <button class="primary" id="submit">Check answers</button><div id="result" aria-live="polite" style="margin-top:16px"></div>
+</section>
+
+<p class="muted" style="text-align:center;margin-top:18px">Developed by Sandhiya Veera<br><a href="mailto:sandhiyakrish2803@gmail.com" style="color:inherit">sandhiyakrish2803@gmail.com</a> · <a href="https://www.linkedin.com/in/sandhiya-veera-88b735347/" target="_blank" rel="noopener" style="color:inherit">LinkedIn</a></p>
+
+<script>
+const $=(s,r=document)=>r.querySelector(s),names=["Welcome","Hazards","Order","Extinguishers","Check"],done=new Set();let cur=0;
+function bar(){$("#bar").innerHTML=names.map((n,i)=>`<div class="${i===cur?"on":done.has(i)?"done":""}">${n}</div>`).join("")}
+function show(i){cur=i;document.querySelectorAll("main>section").forEach((s,j)=>s.hidden=j!==i);bar();scrollTo(0,0);const h=$("#s"+i+" h1,#s"+i+" h2");h.tabIndex=-1;h.focus({preventScroll:true})}
+function unlock(i){const b=$("#s"+i+" .next");if(b)b.disabled=false;done.add(i)}
+document.querySelectorAll(".next").forEach(b=>b.onclick=()=>{done.add(cur);show(cur+1)});bar();
+
+/* Hazard hunt */
+const rooms=[
+["Reception",[["Assembly point sign by the door",0,"Fine. Clear signs help people leave quickly."],["Cardboard boxes stacked in front of the exit",1,"Hazard. Blocked exits can trap people."]]],
+["Server room",[["Six devices on one extension board",1,"Hazard. Overloaded sockets overheat and start fires."],["Wall-mounted extinguisher with a current check tag",0,"Fine. It is checked and easy to reach."]]],
+["Corridor",[["Fire door propped open with a chair",1,"Hazard. Fire doors only stop smoke and flames when closed."],["Green exit sign, path clear",0,"Fine. The route is visible and free."]]],
+["Kitchen",[["Rag left on top of the hot toaster",1,"Hazard. Fabric near a heat source can ignite."],["Water heater with its lid closed",0,"Fine. Nothing unusual here."]]]];
+let hz=0;
+$("#plan").innerHTML=rooms.map(r=>`<div class="room"><h3>${r[0]}</h3>${r[1].map(o=>`<button class="obj" data-h="${o[1]}" data-f="${o[2]}">${o[0]}</button>`).join("")}</div>`).join("");
+$("#plan").onclick=e=>{const b=e.target.closest(".obj");if(!b||b.disabled)return;b.disabled=true;const h=+b.dataset.h;b.classList.add(h?"hz":"fine");
+  $("#h-out").innerHTML=`<span class="${h?"bad":"ok"}">${h?"Hazard found.":"Not a hazard."}</span> ${b.dataset.f}`;
+  if(h){hz++;$("#h-count").textContent=`Hazards found: ${hz} of 4`;if(hz===4){$("#h-count").textContent="Hazards found: 4 of 4. Well done!";unlock(1)}}};
+
+/* Order steps (RACE) */
+const steps=["Rescue anyone in immediate danger","Raise the alarm","Contain the fire by closing doors","Evacuate, or use an extinguisher if it is safe"];
+let nxt=0;const order=[2,0,3,1];
+$("#slots").innerHTML=steps.map((s,i)=>`<div class="slot" id="sl${i}"><span class="muted">Step ${i+1}</span></div>`).join("");
+$("#pool").innerHTML=order.map(i=>`<button class="step" data-i="${i}">${steps[i]}</button>`).join("");
+$("#pool").onclick=e=>{const b=e.target.closest(".step");if(!b)return;const i=+b.dataset.i;
+  if(i===nxt){const s=$("#sl"+nxt);s.classList.add("f");s.innerHTML=`<b>Step ${nxt+1}:</b> ${steps[i]}`;b.remove();nxt++;
+    $("#o-out").innerHTML=nxt===4?`<span class="ok">Correct order.</span> Remember it as R-A-C-E: Rescue, Alarm, Contain, Evacuate.`:`<span class="ok">Correct.</span> What comes next?`;if(nxt===4)unlock(2)}
+  else{b.classList.remove("no");void b.offsetWidth;b.classList.add("no");$("#o-out").innerHTML=`<span class="bad">Not yet.</span> Think about people's safety first, then how to get help.`}};
+
+/* Flip cards */
+const ex=[["Water","Paper, wood and fabric","Never on electrical or oil fires."],["Foam","Liquids like petrol and paint","Also fine on paper and wood."],["CO2","Electrical equipment","Leaves no residue on devices."],["Dry powder","Mixed fires, including gas","Poor visibility when used indoors."]];
+let opened=0;
+$("#cards").innerHTML=ex.map(c=>`<button class="fc" data-i="${ex.indexOf(c)}" aria-pressed="false"><b>${c[0]}</b><span class="muted">Select to reveal</span></button>`).join("");
+$("#cards").onclick=e=>{const b=e.target.closest(".fc");if(!b||b.classList.contains("on"))return;const c=ex[+b.dataset.i];b.classList.add("on");b.setAttribute("aria-pressed","true");
+  b.innerHTML=`<b>${c[0]}</b><span>Use on: ${c[1]}</span><span class="muted">${c[2]}</span>`;opened++;$("#c-count").textContent=`Cards opened: ${opened} of 4`;if(opened===4)unlock(3)};
+
+/* Quiz */
+const qs=[
+{q:"A small fire starts in the server room. What type of extinguisher is best?",o:["Water","CO2","Foam"],a:1,f:"CO2 is safe on electrical equipment and leaves no residue."},
+{q:"You hear the alarm. What should you do with the lift?",o:["Use the lift, it is faster","Use the stairs","Wait at your desk"],a:1,f:"Lifts can stop or fill with smoke. Always use the stairs."},
+{q:"When should you try to fight a fire yourself?",o:["Only if it is small, the exit is behind you and you are trained","Always, to protect the office","Never, even if you are trained"],a:0,f:"Fight a fire only when it is safe. Your life matters more than property."}];
+$("#quiz").innerHTML=qs.map((q,i)=>`<div class="q" id="q${i}"><b>${i+1}. ${q.q}</b>${q.o.map((o,j)=>`<label><input type="radio" name="q${i}" value="${j}">${o}</label>`).join("")}<div class="res"></div></div>`).join("");
+$("#submit").onclick=()=>{
+  if(qs.some((q,i)=>!$(`input[name=q${i}]:checked`))){$("#result").innerHTML=`<span class="bad">Answer all 3 questions first.</span>`;return}
+  let sc=0;qs.forEach((q,i)=>{const ok=+$(`input[name=q${i}]:checked`).value===q.a;if(ok)sc++;$("#q"+i+" .res").innerHTML=`<span class="${ok?"ok":"bad"}">${ok?"Correct.":"Not quite."}</span> ${q.f}`});
+  const pass=sc>=2;done.add(4);bar();
+  $("#result").innerHTML=`<p class="score">${sc} / 3</p><p><b>${pass?"Course complete. You passed!":"You need 2 correct to pass."}</b></p>${pass?"<p>Remember: spot hazards, follow R-A-C-E, and pick the right extinguisher.</p>":""}<button id="again">${pass?"Restart course":"Try again"}</button>`;
+  $("#again").onclick=()=>{if(pass)location.reload();else{$("#result").innerHTML="";document.querySelectorAll("#quiz input").forEach(i=>i.checked=false);document.querySelectorAll(".res").forEach(r=>r.innerHTML="")}}};
+</script>
+</main>
+</body>
+</html>
